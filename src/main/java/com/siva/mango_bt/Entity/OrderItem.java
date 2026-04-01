@@ -1,5 +1,6 @@
 package com.siva.mango_bt.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ public class OrderItem {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
