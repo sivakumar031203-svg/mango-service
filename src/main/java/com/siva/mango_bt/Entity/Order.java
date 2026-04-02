@@ -97,7 +97,7 @@ public class Order {
     }
 
     public enum PaymentMethod {
-        QR_CODE, UPI, RAZORPAY
+        QR_CODE, UPI, COD, RAZORPAY
     }
 
     public enum PaymentStatus {
