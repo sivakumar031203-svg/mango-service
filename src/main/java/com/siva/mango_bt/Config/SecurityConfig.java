@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/orders/track/**").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/orders/*/payment").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/payments/create-order").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/payments/verify").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/notifications/stream").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/notifications/unread-count").hasRole("ADMIN")
