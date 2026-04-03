@@ -53,9 +53,9 @@ public class PaymentController {
             com.razorpay.Order rzpOrder = client.orders.create(options);
 
             return ResponseEntity.ok(Map.of(
-                    "razorpayOrderId", rzpOrder.get("id"),
-                    "amount",          rzpOrder.get("amount"),
-                    "currency",        rzpOrder.get("currency"),
+                    "razorpayOrderId", rzpOrder.get("id").toString(),
+                    "amount",          rzpOrder.get("amount").toString(),
+                    "currency",        rzpOrder.get("currency").toString(),
                     "keyId",           keyId,
                     "customerName",    order.getCustomerName(),
                     "customerEmail",   order.getCustomerEmail() != null ? order.getCustomerEmail() : "",
