@@ -12,11 +12,19 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
+
     Optional<Order> findByOrderNumber(String orderNumber);
+
     List<Order> findAllByOrderByCreatedAtDesc();
+
     List<Order> findByStatus(Order.OrderStatus status);
+
     List<Order> findByCustomerEmail(String email);
+
     List<Order> findByStatusOrderByCreatedAtDesc(Order.OrderStatus status);
+
+    // Seller-scoped queries (fix for OrderController seller isolation)
+    List<Order> findBySeller_IdOrderByCreatedAtDesc(Long sellerId);
 
     long countByIsNewNotificationTrue();
 
@@ -25,7 +33,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("UPDATE Order o SET o.isNewNotification = false WHERE o.isNewNotification = true")
     void markAllNotificationsRead();
 
-    // Stats
+    // Stats helpers
     @Query("SELECT COUNT(o) FROM Order o WHERE o.status = 'PENDING'")
     long countPending();
 

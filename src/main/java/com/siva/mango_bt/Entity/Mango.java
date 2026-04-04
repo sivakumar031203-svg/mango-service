@@ -60,6 +60,16 @@ public class Mango {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "seller_id")
+    private Seller seller;
+
+    @Column(name = "avg_rating", precision = 3, scale = 2)
+    private BigDecimal avgRating;
+
+    @Column(name = "review_count")
+    private Integer reviewCount = 0;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

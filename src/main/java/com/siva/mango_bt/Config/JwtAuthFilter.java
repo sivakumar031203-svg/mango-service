@@ -27,34 +27,47 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String token = null;
 
+        // Read from Authorization header first
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7);
         }
 
-        // Also support ?token= query param (for SSE streams)
+        // Fallback: ?token= query param (for SSE streams that can't set headers)
         if (token == null) {
             token = request.getParameter("token");
         }
 
         if (token != null) {
             try {
-                // validateToken already catches JwtException internally and returns false
                 if (jwtUtil.validateToken(token)) {
                     String username = jwtUtil.extractUsername(token);
+
+                    // ── FIX: read actual role from token, not hardcoded ──────────
+                    String role = jwtUtil.extractRole(token);
+                    // Normalise: role in token is stored as "ROLE_X" already.
+                    // SimpleGrantedAuthority needs the full "ROLE_X" string.
+                    if (role == null || role.isBlank()) {
+                        // Fallback safety: deny auth if no role present
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
+                    // Ensure it always starts with ROLE_ (defensive)
+                    String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
+
                     if (username != null) {
                         UsernamePasswordAuthenticationToken auth =
                                 new UsernamePasswordAuthenticationToken(
                                         username,
                                         null,
-                                        List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                                        List.of(new SimpleGrantedAuthority(authority))
                                 );
                         SecurityContextHolder.getContext().setAuthentication(auth);
                     }
                 }
-                // If token is invalid/expired: do nothing, clear any stale auth, let Spring decide
+                // Invalid/expired token → do nothing, let Spring Security decide
             } catch (Exception e) {
-                // Safety net — never let a bad token crash the filter chain
+                // Never let a bad token crash the filter chain
                 SecurityContextHolder.clearContext();
             }
         }
